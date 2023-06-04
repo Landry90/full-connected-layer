@@ -22,16 +22,16 @@ public:
 	Neuron();
 	Neuron(int prev_layer_size);
 	~Neuron();
-	double getOutput() const;
+	double getOutput();
 	void initRandomWeights(int prev_layer_size);
 	void initRandomBias();
-	void setWeights(const std::vector<double>&newWeights);
+	void setWeights(std::vector<double>&newWeights);
 	void setBias(double newBias);
 	double getBias();
 	std::vector<double> getWeights();
 	void printWeights();
-	double weighedBiasedSum(const std::vector<double>& prev_layer_values);
-	void activate(const std::vector<double>& prev_layer_values);
+	double weighedBiasedSum(std::vector<double>& prev_layer_values);
+	void activate(std::vector<double>& prev_layer_values);
 
 	//void setValue(unsigned int layer, unsigned int neuron, double new_value);
 	//double getValue(unsigned int layer, unsigned int neuron);

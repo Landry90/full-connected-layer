@@ -32,6 +32,7 @@ public:
 	void setNumNeurons(int num_neurons);
 	int getNumNeurons();
 	std::vector<double> getLayerOutputs();
+	void printLayerOutputs();
 
 
 private:

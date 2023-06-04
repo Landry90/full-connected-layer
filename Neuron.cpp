@@ -14,15 +14,11 @@ Neuron::~Neuron(){}
 Neuron::Neuron(int prev_layer_size) {
     // Initialisation des poids avec des valeurs aléatoires
     this->weights.resize(prev_layer_size);
-    //this->weights = randomVector(prev_layer_size);
-    //this->weights = randomVec(prev_layer_size);
-    //this->bias = init;
     initRandomBias();
     initRandomWeights(prev_layer_size);
-    //this->initRandomBias();
 }
 
-double Neuron::weighedBiasedSum(const std::vector<double>& prev_layer_values){
+double Neuron::weighedBiasedSum(std::vector<double>& prev_layer_values){
     double weightedSum = 0.0;
     int size = this->weights.size();
     for (unsigned int i=0; i<size; i++){
@@ -30,17 +26,17 @@ double Neuron::weighedBiasedSum(const std::vector<double>& prev_layer_values){
     }
     return weightedSum+(this->bias);
 }
-void Neuron::activate(const std::vector<double>& prev_layer_values){
+void Neuron::activate(std::vector<double>& prev_layer_values){
     double sum = weighedBiasedSum(prev_layer_values);
     this->output = activationFunction(sum);
 }
 
 
-double Neuron::getOutput() const{
+double Neuron::getOutput(){
 	return this->output;
 }
 
-void Neuron::setWeights(const std::vector<double>&newWeights){
+void Neuron::setWeights(std::vector<double>&newWeights){
 	this->weights = newWeights;
 }
 

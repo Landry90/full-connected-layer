@@ -18,6 +18,7 @@ public:
   //void train(std::vector<std::vector<double>> inputs, std::vector<std::vector<douoble>>& targets, int numEpochs);
   //std::vector<double> predict(std::vector<double>& inputs, double learning_rate);
   std::vector<Layer> getLayers();
+  void printLayerOutputs();
 
 private:
   int num_layers;

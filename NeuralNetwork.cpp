@@ -1,15 +1,16 @@
 #include "NeuralNetwork.h"
 
-NeuralNetwork::NeuralNetwork(int num_layers, int num_neurons_per_layer){
-    this->num_layers = num_layers;
-    for(int i=0; i<num_layers; i++){
-        this->layers[i] = Layer(num_neurons_per_layer, num_neurons_per_layer);
-    }
-    this->layers[num_layers-1].setNumNeurons(1);
-}
-
 NeuralNetwork::NeuralNetwork(){}
 NeuralNetwork::~NeuralNetwork(){}
+
+NeuralNetwork::NeuralNetwork(int num_layers, int num_neurons_per_layer){
+    this->num_layers = num_layers;
+    this->layers.resize(num_layers);
+    for(int i=0; i<num_layers; i++){
+        this->layers[i] = Layer(num_neurons_per_layer, num_neurons_per_layer);
+        this->layers[num_layers-1].setNumNeurons(1);
+    }
+}
 
 std::vector<double> NeuralNetwork::forward(std::vector<double>& input_datas){
     int data_size = input_datas.size();
@@ -20,6 +21,17 @@ std::vector<double> NeuralNetwork::forward(std::vector<double>& input_datas){
         layers[i].forward(layer_output);
     }
     
+}
+
+std::vector<Layer> NeuralNetwork::getLayers(){
+    return this -> layers;
+}
+
+void NeuralNetwork::printLayerOutputs(){
+    for(size_t i=0; i< this->layers.size(); i++){
+        layers[i].printLayerOutputs();
+        std::cout<<std::endl;
+    }
 }
 
 /*
