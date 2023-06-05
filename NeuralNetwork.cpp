@@ -3,7 +3,8 @@
 NeuralNetwork::NeuralNetwork(){}
 NeuralNetwork::~NeuralNetwork(){}
 
-NeuralNetwork::NeuralNetwork(int num_layers, int num_neurons_per_layer){
+NeuralNetwork::NeuralNetwork(int num_layers, int num_neurons_per_layer, double alpha){
+    this->alpha = alpha;
     this->num_layers = num_layers;
     this->layers.resize(num_layers);
     for(int i=0; i<num_layers; i++){
@@ -32,6 +33,49 @@ void NeuralNetwork::printLayerOutputs(){
         layers[i].printLayerOutputs();
         std::cout<<std::endl;
     }
+}
+
+void NeuralNetwork::backward(std::vector<double>&target, double y, double my_alpha){
+
+    //Dans cette section, on calcule l'erreur
+    std::vector<double> last_layer_outputs = layers[num_layers-1].getLayerOutputs();
+    double p = last_layer_output[0];
+    double error = lossFunction(p, y);
+
+    // A partir d'ici, on fait la rétro-propagation
+    for (int i = this->layers.size()-1; i>0 ; --i){
+
+        int layer_size = getLayerSize();
+        std::vector<Neuron> neurons = layers[i].getNeurons();
+        int prev_layer_size = layers[i].getPrevLayerSize();
+        std::vector<double> layer_outputs = layers[i].getLayerOutputs();
+        std::vector<double> prev_layer_outputs = layers[i-1].getLayerOutputs();
+
+        // delta est un vecteur peuplé par les gradients d'erreurs des différents neurones de la couche actuelle
+        // Son calcule se fait dans la boucle for ci-dessous
+        std::vector<double> delta(layer_size);
+        for (int j = 0; j < layer_size; ++j){
+            delta[j] = activationDerivative(neurons[j])*error;
+        }
+
+        std::vector<double> delta_w(prev_layer_size);
+        for (int k=0; k < prev_layer_size; ++k){
+            for(int m=0; m<layer_size; ++m){
+                delta_w[k] = my_alpha * printLayerOutputs[k] * delta[m];
+            }
+        }
+
+        
+
+        for(int j=0; j<neurons.size()-1; i++){
+            int prev_layer_size = neurons[j].getWeights().size();
+            std::vector<double>
+
+            
+        }
+        
+        double delta_w = my_alpha*delta
+    }   
 }
 
 /*

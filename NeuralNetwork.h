@@ -14,8 +14,8 @@ public:
   ~NeuralNetwork();
   //void init(std::vector<int>& layerSizes);
   std::vector<double> forward(std::vector<double>& input_datas);
-  //void backward(std::vector<double>&target)
-  //void train(std::vector<std::vector<double>> inputs, std::vector<std::vector<douoble>>& targets, int numEpochs);
+  void backward(std::vector<double>&target, double y, double p);
+  //void train(std::vector<std::vector<double>> inputs, std::vector<std::vector<double>>& targets, int numEpochs);
   //std::vector<double> predict(std::vector<double>& inputs, double learning_rate);
   std::vector<Layer> getLayers();
   void printLayerOutputs();
@@ -23,7 +23,7 @@ public:
 private:
   int num_layers;
   std::vector<Layer> layers;
-  double learning_rate;
+  double alpha;     //learning rate
   unsigned int epochs;
   double precision;
   
