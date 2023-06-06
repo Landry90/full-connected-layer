@@ -8,7 +8,7 @@
 class NeuralNetwork
 {
 public:
-  NeuralNetwork(int num_layers, int num_neurons_per_layer);
+  NeuralNetwork(int num_layers, int num_neurons_per_layer, double alpha);
   //NeuralNetwork(std::vector<int> layerSizes);
   NeuralNetwork();
   ~NeuralNetwork();

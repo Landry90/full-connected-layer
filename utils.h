@@ -2,8 +2,9 @@
 #define UTILS_H
 
 #include <cmath>
+#include <vector>
 
-//activationFunction ---> Fonction sigmoide
+// activationFunction ---> Fonction sigmoide
 // lossFunction ---> Fonction d'entropie croisée binaire
 
 // p est la probabilité calculée par le réseau de neurones

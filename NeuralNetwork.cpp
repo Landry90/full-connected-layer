@@ -39,42 +39,41 @@ void NeuralNetwork::backward(std::vector<double>&target, double y, double my_alp
 
     //Dans cette section, on calcule l'erreur
     std::vector<double> last_layer_outputs = layers[num_layers-1].getLayerOutputs();
-    double p = last_layer_output[0];
+    double p = last_layer_outputs[0];
     double error = lossFunction(p, y);
 
     // A partir d'ici, on fait la rétro-propagation
     for (int i = this->layers.size()-1; i>0 ; --i){
 
-        int layer_size = getLayerSize();
+        int layer_size = layers[i].getLayerSize();
         std::vector<Neuron> neurons = layers[i].getNeurons();
         int prev_layer_size = layers[i].getPrevLayerSize();
         std::vector<double> layer_outputs = layers[i].getLayerOutputs();
         std::vector<double> prev_layer_outputs = layers[i-1].getLayerOutputs();
 
-        // delta est un vecteur peuplé par les gradients d'erreurs des différents neurones de la couche actuelle
+        // delta est le vecteur gradient d'erreurs des différents neurones de la couche actuelle
         // Son calcule se fait dans la boucle for ci-dessous
         std::vector<double> delta(layer_size);
         for (int j = 0; j < layer_size; ++j){
-            delta[j] = activationDerivative(neurons[j])*error;
+            delta[j] = activationDerivative(neurons[j].getOutput()) * error;
         }
 
         std::vector<double> delta_w(prev_layer_size);
         for (int k=0; k < prev_layer_size; ++k){
             for(int m=0; m<layer_size; ++m){
-                delta_w[k] = my_alpha * printLayerOutputs[k] * delta[m];
+                delta_w[k] = my_alpha * layer_outputs[k] * delta[m];
             }
         }
 
         
-
+        /*
         for(int j=0; j<neurons.size()-1; i++){
             int prev_layer_size = neurons[j].getWeights().size();
-            std::vector<double>
+            std::vector<double> vect;
 
             
         }
-        
-        double delta_w = my_alpha*delta
+        */
     }   
 }
 
