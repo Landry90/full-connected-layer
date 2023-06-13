@@ -18,11 +18,11 @@ double lossFunction(double p, double y);
 double lossFunctionDerivate(double p, double y);
 
 
-double moyenne(std::vector<double> data_vector);
+double moyenne(std::vector<double>& data_vector);
 double variance(std::vector<double>& data_vector);
 double ecart_type(std::vector<double>& data_vector);
 
-std::vector<double> normalize(std::vector<double> data_vector);
+std::vector<double> normalize(std::vector<double>& data_vector);
 
 
 #endif //UTILS_H

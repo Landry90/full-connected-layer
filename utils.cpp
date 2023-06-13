@@ -17,7 +17,7 @@ double lossFunctionDerivate(double p, double y){
     return (p - y) / (p * (1 - p));
 }
 
-double moyenne(std::vector<double> data_vector){
+double moyenne(std::vector<double>& data_vector){
     double som = 0;
     for(int i=0; i<data_vector.size(); ++i){
         som += data_vector[i];

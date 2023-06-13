@@ -29,10 +29,16 @@ public:
 	int getLayerSize();
 	void setPrevLayerSize(double prev_layer_size);
 	int getPrevLayerSize();
-	void setNumNeurons(int num_neurons);
+	void setNumNeurons(int new_num_neurons);
 	int getNumNeurons();
 	std::vector<double> getLayerOutputs();
 	void printLayerOutputs();
+	//std::vector<double> getDelta();
+	//void setDelta(std::vector<double>& new_delta);
+	std::vector<std::vector<double>> getWeightsMatrix();
+
+	std::vector<double> delta;
+	std::vector<std::vector<double>> weights_matrix;
 
 
 private:

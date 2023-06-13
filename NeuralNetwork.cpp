@@ -1,4 +1,4 @@
-#include "NeuralNetwork.h"
+ #include "NeuralNetwork.h"
 
 NeuralNetwork::NeuralNetwork(){}
 NeuralNetwork::~NeuralNetwork(){}
@@ -29,65 +29,201 @@ std::vector<Layer> NeuralNetwork::getLayers(){
 }
 
 void NeuralNetwork::printLayerOutputs(){
-    for(size_t i=0; i< this->layers.size(); i++){
-        layers[i].printLayerOutputs();
+    for(Layer layer : this->layers){
+        layer.printLayerOutputs();
         std::cout<<std::endl;
     }
 }
 
-void NeuralNetwork::backward(std::vector<double>&target, double y, double my_alpha){
+void NeuralNetwork::backward(std::vector<double>& input_datas, double y, double my_alpha){
 
     //Dans cette section, on calcule l'erreur
-    std::vector<double> last_layer_outputs = layers[num_layers-1].getLayerOutputs();
+    Layer last_layer = this->layers[num_layers-1];
+    std::vector<double> last_layer_outputs = last_layer.getLayerOutputs();
     double p = last_layer_outputs[0];
     double error = lossFunction(p, y);
 
-    // A partir d'ici, on fait la rétro-propagation
-    for (int i = this->layers.size()-1; i>0 ; --i){
+    // Dans cette section, on fait la mise à jour des poids de l'unique neurone de la couche de sortie.
+    std::vector<Neuron> last_layer_neurons = last_layer.getNeurons();
+    std::vector<double> last_layer_weights = last_layer_neurons[0].getWeights();
 
-        int layer_size = layers[i].getLayerSize();
-        std::vector<Neuron> neurons = layers[i].getNeurons();
-        int prev_layer_size = layers[i].getPrevLayerSize();
+    std::cout<<std::endl;
+    std::cout<<"Poids de la couche de sortie apres correction: "<<std::endl;
+    double delta_last = error*activationDerivative(p);
+    std::vector<double> last_prev_layer_outputs = layers[this->num_layers-2].getLayerOutputs();
+    for(int a=0; a<last_layer_weights.size(); ++a){
+        last_layer_weights[a] += my_alpha*delta_last*last_prev_layer_outputs[a];
+        std::cout<<last_layer_weights[a]<<std::endl;
+    }
+    this->layers[num_layers-1].delta[0] = delta_last;
+    
+
+
+   // Dans cette section, on calcule le gradient d'erreurs pour chaque couche cachée.
+
+    std::cout<<"Bonjour"<<std::endl<<std::endl;
+    for(int i=this->layers.size()-2; i>=0; --i){
+        std::cout<<"Bonjour "<<i<<std::endl<<std::endl;
         std::vector<double> layer_outputs = layers[i].getLayerOutputs();
-        std::vector<double> prev_layer_outputs = layers[i-1].getLayerOutputs();
+        std::cout<<"sorties de la couche "<<i<<std::endl;
+        for(auto elmt:layer_outputs)
+            std::cout<<elmt<<std::endl;
+        std::cout<<std::endl;
+        std::vector<std::vector<double>>next_layer_weights_matrix;
+        next_layer_weights_matrix = this->layers[i+1].getWeightsMatrix();
+        std::cout<<"Elements de la matrice:"<<std::endl;
+        std::cout<<"Taille de la matrice = "<<next_layer_weights_matrix.size()<<std::endl<<std::endl;
 
-        // delta est le vecteur gradient d'erreurs des différents neurones de la couche actuelle
-        // Son calcule se fait dans la boucle for ci-dessous
-        std::vector<double> delta(layer_size);
-        for (int j = 0; j < layer_size; ++j){
-            delta[j] = activationDerivative(neurons[j].getOutput()) * error;
+        double som = 0.0;
+        std::vector<double> derivated_output(layers[i].getLayerSize());
+        for(int j=0; j< this->layers[i].getLayerSize(); ++j){
+            for(int k=0; k < this->layers[i+1].getLayerSize(); ++k){
+                som += next_layer_weights_matrix[k][j] * (layers[i+1].delta)[k];
+            }
+            derivated_output[j] = activationDerivative(layer_outputs[j]);
+            (this->layers[i].delta)[j] = som * derivated_output[j];
         }
 
-        std::vector<double> delta_w(prev_layer_size);
-        for (int k=0; k < prev_layer_size; ++k){
-            for(int m=0; m<layer_size; ++m){
-                delta_w[k] = my_alpha * layer_outputs[k] * delta[m];
+    }
+
+    // Mise à jour des poids et biais des couches cachées à partir de la deuxième
+
+    for(int i = this->layers.size()-2; i>0; --i){
+        std::vector<Neuron> layer_neurons(layers[i].getLayerSize());
+        layer_neurons = this->layers[i].getNeurons();
+        std::vector<double> delta_layer(layers[i].getLayerSize());
+        delta_layer = this->layers[i].delta;
+        std::vector<std::vector<double>> layer_neurons_weights(this->layers[i-1].getLayerSize());
+        std::vector<double> prev_layer_outputs(this->layers[i-1].getLayerSize());
+
+        // On extrait les poids et les ouptputs de chaque neurone de la couche
+        for(int j=0; j < this->layers[i-1].getLayerSize(); ++j){
+            layer_neurons_weights[j] = layer_neurons[j].getWeights();  // On extrait le vecteur de poids du neuron j
+            prev_layer_outputs[j] = layer_neurons[j].getOutput();  // On extrait le ouotput du neuron j
+        }
+
+        // Mise à jour des poids
+
+        // On calcule le vecteur correspondant à la somme entre delta, les valeurs de la couche précéente et alpha
+        std::vector<double> dw(this->layers[i].getLayerSize(), 0.0);
+        for(int k=0; k < this->layers[i].getLayerSize(); ++k){
+            for(int m=0; m < this->layers[i-1].getLayerSize(); ++m){
+                dw[k] = my_alpha * delta_layer[k] * prev_layer_outputs[m];
+            }    
+        }
+         // On calcule la nouvelle matrice de poids de la couche
+        for(int n=0; n < this->layers[i-1].getLayerSize(); ++n){
+            for(int p=0; p < layers[i].getLayerSize(); ++p){
+                layer_neurons_weights[n][p] += dw[p];
             }
         }
 
-        
-        /*
-        for(int j=0; j<neurons.size()-1; i++){
-            int prev_layer_size = neurons[j].getWeights().size();
-            std::vector<double> vect;
-
-            
+        // On met à jour la matrice de poids de la couche
+        for(int t=0; t < layers[i].getLayerSize(); ++t){
+            layer_neurons[t].setWeights(layer_neurons_weights[t]);
         }
-        */
-    }   
-}
 
-/*
-std::vector<double>NeuralNetwork::forward(std::vector<double>& input){
-    // Vérifier que la taille des entrées correspond au nombre d'entrées de la couche
-    if (inputs.size() != this->numInputs) {
-        throw std::runtime_error("Le nombre d'entrées ne correspond pas au nombre d'entrées de la couche !");
+        // Mise à jour des biais
+
+        // On calcule les nouveaux biais des neurones de la couche
+        std::vector<double> layer_bias(this->layers[i].getLayerSize());
+        for(int r=0; r < this->layers[i].getLayerSize(); ++r){
+            layer_bias[r] = layer_neurons[r].getBias();
+        }
+
+        // On met à jour les biais des neurones de la couche
+        for(int r=0; r < layers[i].getLayerSize(); ++r){
+            layer_bias[r] += my_alpha * delta_layer[r];
+            layer_neurons[r].setBias(layer_bias[r]);
+        }
+        
     }
 
-    // Calculer la sortie de chaque neurone de la couche
-    std::vector<double> outputs(neurons.size());
-    for (size_t i = 0; i < neurons.size(); i++) {
-        outputs[i] = neurons[i].computeWeightedSum(inputs);
+    // Mise à jour des poids et des biais de la première couche cachée
+    // Pour ce faire, on répète le même processus que le précédent aux différences que:
+    // il n'y a pas de boucle pour parcourir plusieurs couches
+    // On ne considère que la couche d'indice 0
+    // La couche précédente est remplacée par le vecteur de données
+
+    // Mise à jour des poids
+    std::cout<<"Vecteur de neurons de la premiere couche cachee. Declaration"<<std::endl;
+    std::vector<Neuron> layer_neurons(layers[0].getLayerSize());
+    std::cout<<"Vecteur de neurons de la premiere couche cachee. Initialisation"<<std::endl;
+    layer_neurons = this->layers[0].getNeurons();
+    std::cout<<"Vecteur du gradient d'erreurs de la premiere couche cachee. Declaration"<<std::endl;
+    std::vector<double> delta_layer(this->layers[0].getLayerSize());
+    std::cout<<"Vecteur du gradient d'erreurs de la premiere couche cachee. Initialisation"<<std::endl;
+    delta_layer = this->layers[0].delta;
+    std::cout<<"Matrice de poids de la premiere couche cachee. Declaration"<<std::endl;
+    std::vector<std::vector<double>> layer_neurons_weights(this->layers[0].getLayerSize());
+    std::cout<<"Vecteur des entrees de la premiere couche cachee. Declaration"<<std::endl;
+    std::vector<double> prev_layer_outputs(input_datas.size());
+    std::cout<<"Toutes les declarations et initialisations sont a present terminees"<<std::endl;
+
+    // On extrait les poids de la premiere couche cachee
+    for(int j=0; j < this->layers[0].getLayerSize(); ++j){
+        layer_neurons_weights[j].resize(input_datas.size());  // On extrait le vecteur de poids du neuron j
+        for(int k=0; k < input_datas.size(); ++k){
+            layer_neurons_weights[j][k] = (layer_neurons[j].getWeights())[k];
+            std::cout<<"layer_neurons_weights["<<j<<"]"<<"["<<k<<"] = "<<layer_neurons_weights[j][k]<<std::endl;
+        }
+        std::cout<<std::endl;
     }
+    std::cout<<std::endl<<std::endl;
+    prev_layer_outputs = input_datas;
+    std::cout<<"Les sorties de la couche precedent la premiere couche cachee"<<std::endl;
+    
+    int w = 0;
+    for(double output:prev_layer_outputs){
+        std::cout<<"prev_layer_outputs ["<<w<<"] = "<<output<<std::endl;
+        ++w;
+    }
+    
+    std::cout<<std::endl;
+
+    // Mise à jour des poids
+
+    // On calcule le vecteur correspondant au produit entre delta, les valeurs de la couche précédente et alpha
+    std::cout<<"vecteur dw = alpha * delta * prev_layer_outputs"<<std::endl;
+    std::vector<double> dw(input_datas.size(), 0.0);
+    for(int k=0; k < this->layers[0].getLayerSize(); ++k){
+        for(int m=0; m < input_datas.size(); ++m){
+            dw[k] = my_alpha * delta_layer[k] * prev_layer_outputs[m];
+        }
+        std::cout<<"dw["<<k<<"] = "<<dw[k]<<std::endl; 
+    }
+    std::cout<<std::endl;
+
+    std::cout<<"Valeurs de la nouvelle matrice de poids de la premiere couche cachee"<<std::endl;
+    // On calcule la nouvelle matrice de poids de la couche
+    for(int n=0; n < layers[0].getLayerSize(); ++n){
+        for(int p=0; p < input_datas.size(); ++p){
+            layer_neurons_weights[n][p] += dw[p];
+            std::cout<<"layer_neurons_weights["<<n<<"]["<<p<<"] = "<<layer_neurons_weights[n][p]<<std::endl;
+        }
+        std::cout<<std::endl;
+    }
+    std::cout<<std::endl;
+
+    // On met à jour la matrice de poids de la couche
+    for(int t=0; t < layers[0].getLayerSize(); ++t){
+        layer_neurons[t].setWeights(layer_neurons_weights[t]);
+    }
+
+    // Mise à jour des biais
+
+    std::cout<<"Valeurs du vecteur de biais de la premiere couche cachee"<<std::endl;
+    // On calcule les nouveaux biais des neurones de la couche
+    std::vector<double> layer_bias(this->layers[0].getLayerSize());
+    for(int r=0; r < this->layers[0].getLayerSize(); ++r){
+        layer_bias[r] = layer_neurons[r].getBias();
+        std::cout<<"layer_bias["<<r<<"] = "<<layer_bias[r]<<std::endl;
+    }
+
+    // On met à jour les biais des neurones de la couche
+    for(int r=0; r < layers[0].getLayerSize(); ++r){
+        layer_bias[r] += my_alpha * delta_layer[r];
+        layer_neurons[r].setBias(layer_bias[r]);
+    }
+
 }
-*/
