@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <vector>
+#include <time.h>
 
 // activationFunction ---> Fonction sigmoide
 // lossFunction ---> Fonction d'entropie croisée binaire
@@ -23,6 +24,8 @@ double variance(std::vector<double>& data_vector);
 double ecart_type(std::vector<double>& data_vector);
 
 std::vector<double> normalize(std::vector<double>& data_vector);
+
+std::vector<std::vector<double>>vector2Matrix(std::vector<double>& vec, int nrows, int ncols);
 
 
 #endif //UTILS_H

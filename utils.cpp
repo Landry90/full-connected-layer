@@ -1,6 +1,7 @@
 #include "utils.h"
 
 
+
 double activationFunction(double x){
     return 1.0 / (1.0 + std::exp(-x));
 }
@@ -43,4 +44,19 @@ std::vector<double> normalize(std::vector<double>& data_vector){
         data_vector[i] = (data_vector[i] - moyenne(data_vector)) / ecart_type(data_vector);
     }
     return data_vector;
+}
+
+std::vector<std::vector<double>>vector2Matrix(std::vector<double>& vec, int nrows, int ncols){
+    std::vector<std::vector<double>> mat(nrows);
+    for(int i=0; i<nrows; ++i){
+        mat[i].resize(ncols);
+    }
+    int p = 0; 
+    for(int i=0; i<nrows; ++i){
+        for(int j=0; j<ncols; ++j){
+            mat[i][j] = vec[p];
+            ++p;
+        }
+    }
+    return mat;
 }
