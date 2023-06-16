@@ -21,7 +21,7 @@ void NeuralNetwork::forward(std::vector<double>& input_datas){
         std::vector<double> layer_output = layers[i-1].getLayerOutputs();
         this->layers[i].forward(layer_output);
     }
-    
+    std::cout<<"Forward OK"<<std::endl;   
 }
 
 std::vector<Layer> NeuralNetwork::getLayers(){
@@ -38,9 +38,11 @@ void NeuralNetwork::backward(std::vector<double>& input_datas, double y, double 
 
     //Dans cette section, on calcule l'erreur
     Layer last_layer = this->layers[num_layers-1];
-    std::vector<double> last_layer_outputs = last_layer.getLayerOutputs();
+    std::vector<double> last_layer_outputs(last_layer.getLayerSize());
+    last_layer_outputs = last_layer.getLayerOutputs();
     double p = last_layer_outputs[0];
     double error = lossFunction(p, y);
+    std::cout<<"error = "<<error<<std::endl<<std::endl;
 
     // Dans cette section, on fait la mise à jour des poids de l'unique neurone de la couche de sortie.
     std::vector<Neuron> last_layer_neurons = last_layer.getNeurons();
@@ -52,6 +54,8 @@ void NeuralNetwork::backward(std::vector<double>& input_datas, double y, double 
         last_layer_weights[a] += my_alpha*delta_last*last_prev_layer_outputs[a];
     }
     this->layers[num_layers-1].delta[0] = delta_last;
+
+    std::cout<<"Out layer weights updated"<<std::endl<<std::endl;
     
    // Dans cette section, on calcule le gradient d'erreurs pour chaque couche cachée.
     for(int i=this->layers.size()-2; i>=0; --i){
@@ -70,6 +74,7 @@ void NeuralNetwork::backward(std::vector<double>& input_datas, double y, double 
         }
 
     }
+    std::cout<<"Gradient d'erreurs de chaque couche OK"<<std::endl<<std::endl;
 
     // Mise à jour des poids et biais des couches cachées à partir de la deuxième
 
@@ -123,6 +128,8 @@ void NeuralNetwork::backward(std::vector<double>& input_datas, double y, double 
         } 
     }
 
+    std::cout<<"Mise a jour des poids et biais de chaque couche cachee OK"<<std::endl<<std::endl;
+
     // Mise à jour des poids et des biais de la première couche cachée
     // Pour ce faire, on répète le même processus que le précédent aux différences que:
     // il n'y a pas de boucle pour parcourir plusieurs couches
@@ -130,21 +137,33 @@ void NeuralNetwork::backward(std::vector<double>& input_datas, double y, double 
     // La couche précédente est remplacée par le vecteur de données
 
     // Mise à jour des poids
-    std::vector<Neuron> layer_neurons(layers[0].getLayerSize());
-    layer_neurons = this->layers[0].getNeurons();
-    std::vector<double> delta_layer(this->layers[0].getLayerSize());
-    delta_layer = this->layers[0].delta;
-    std::vector<std::vector<double>> layer_neurons_weights(this->layers[0].getLayerSize());
+    Layer first_layer = this->layers[0];
+    std::cout<<"first_layer"<<std::endl;
+    int first_layer_size = first_layer.getLayerSize();
+    std::cout<<"first_layer_size = "<<first_layer_size<<std::endl;
+    std::vector<Neuron> first_layer_neurons(first_layer_size);
+    first_layer_neurons = first_layer.getNeurons();
+    std::cout<<"first_layer_neurons_size = "<<first_layer_neurons.size()<<std::endl;
+    std::vector<double> delta_layer(first_layer_size);
+    delta_layer = first_layer.delta;
+    std::cout<<"delta_layer_size = "<<delta_layer.size()<<std::endl;
+    
+    std::vector<std::vector<double>> layer_neurons_weights(first_layer_size);
     std::vector<double> prev_layer_outputs(input_datas.size());
 
     // On extrait les poids de la premiere couche cachee
-    for(int j=0; j < this->layers[0].getLayerSize(); ++j){
-        layer_neurons_weights[j].resize(input_datas.size());  // On extrait le vecteur de poids du neuron j
-        for(int k=0; k < input_datas.size(); ++k){
-            layer_neurons_weights[j][k] = (layer_neurons[j].getWeights())[k];
-        }
+
+   for(int j=0; j<first_layer_size; ++j){
+    layer_neurons_weights[j].resize(input_datas.size());
+   }
+   for(int j=0; j < first_layer_size; ++j){
+        layer_neurons_weights[j] = first_layer_neurons[j].getWeights();
     }
+    std::cout<<"Extraction des poids de la premiere couche cachee OK"<<std::endl<<std::endl;
+
     prev_layer_outputs = input_datas;
+    std::cout<<"Extraction des valeurs du vecteur d'entree effectuee"<<std::endl;
+    std::cout<<"Taille du vecteur d'entrées = "<<prev_layer_outputs.size()<<std::endl<<std::endl;
 
     // Mise à jour des poids
 
@@ -155,32 +174,44 @@ void NeuralNetwork::backward(std::vector<double>& input_datas, double y, double 
             dw[k] = my_alpha * delta_layer[k] * prev_layer_outputs[m];
         }
     }
+    std::cout<<"Calcul du vecteur de gradient d'erreur intermédiaire de la couche 0 bien fait."<<std::endl;
 
     // On calcule la nouvelle matrice de poids de la couche
-    for(int n=0; n < layers[0].getLayerSize(); ++n){
+    for(int n=0; n < first_layer_size; ++n){
         for(int p=0; p < input_datas.size(); ++p){
             layer_neurons_weights[n][p] += dw[p];
+            std::cout<<n<<" - "<<p<<std::endl;
         }
+        std::cout<<"Bonjour "<<n<<std::endl;
     }
+    std::cout<<"Calcul de la nouvelle matrice des poids de la couche 0 bien faite."<<std::endl;
 
     // On met à jour la matrice de poids de la couche
-    for(int t=0; t < layers[0].getLayerSize(); ++t){
-        layer_neurons[t].setWeights(layer_neurons_weights[t]);
+    for(int t=0; t < first_layer_size; ++t){
+        first_layer_neurons[t].setWeights(layer_neurons_weights[t]);
     }
+    std::cout<<"Mise à jour des poids de la couche 0 bien faite."<<std::endl;
 
     // Mise à jour des biais
     // On calcule les nouveaux biais des neurones de la couche
-    std::vector<double> layer_bias(this->layers[0].getLayerSize());
-    for(int r=0; r < this->layers[0].getLayerSize(); ++r){
-        layer_bias[r] = layer_neurons[r].getBias();
+    std::vector<double> layer_bias(first_layer_size);
+    for(int r=0; r < first_layer_size; ++r){
+        layer_bias[r] = first_layer_neurons[r].getBias();
     }
+    std::cout<<"Calcul de biais de la couche 0 bien fait."<<std::endl;
 
     // On met à jour les biais des neurones de la couche
-    for(int r=0; r < this->layers[0].getLayerSize(); ++r){
+    for(int r=0; r < first_layer_size; ++r){
         layer_bias[r] += my_alpha * delta_layer[r];
-        layer_neurons[r].setBias(layer_bias[r]);
+        first_layer_neurons[r].setBias(layer_bias[r]);
     }
+    std::cout<<"Mise a jour de biais bien faite !!"<<std::endl;
+
+    std::cout<<std::endl<<std::endl;
+    std::cout<<"Backward OK"<<std::endl;
 }
+
+
 
 /*
 void NeuralNetwork::train(std::vector<double>& x_train, std::vector<double>& y_train, int n_epochs, double alpha){

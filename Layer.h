@@ -4,19 +4,6 @@
 #include <vector>
 #include <iostream>
 
-/*
-enum LayerType
-{
-	STANDARD = 0, //Standard layer : fully connected perceptrons
-	OUTPUT, // Output : No bias neuron
-	INPUT, // Input: Standard input (output of neurons is outputRaw() )
-	SOFTMAX //K-Class Classification Layer 
-
-};
-*/
-
-//enum ActivationFunction;
-
 class Layer
 {
 public:

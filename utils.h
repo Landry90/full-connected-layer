@@ -4,6 +4,8 @@
 #include <cmath>
 #include <vector>
 #include <time.h>
+#include <iostream>
+#include <fstream>
 
 // activationFunction ---> Fonction sigmoide
 // lossFunction ---> Fonction d'entropie croisée binaire
@@ -26,6 +28,7 @@ double ecart_type(std::vector<double>& data_vector);
 std::vector<double> normalize(std::vector<double>& data_vector);
 
 std::vector<std::vector<double>>vector2Matrix(std::vector<double>& vec, int nrows, int ncols);
+std::vector<double>read_txt(std::string file_path);
 
 
 #endif //UTILS_H

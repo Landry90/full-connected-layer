@@ -60,3 +60,49 @@ std::vector<std::vector<double>>vector2Matrix(std::vector<double>& vec, int nrow
     }
     return mat;
 }
+
+std::vector<double>read_txt(std::string file_path){
+    std::vector<double> temp;
+    std::ifstream f(file_path);
+    if (f.is_open()){
+        int dim;
+        f >> dim;
+        std::cout<< dim << std::endl;
+        temp.resize(dim);
+        int k = 0;
+        while (k<dim){
+            f >> temp[k];
+            k++;
+        }
+    }
+    else{
+        exit(EXIT_FAILURE);
+    }
+    return temp;
+
+}
+
+/*
+ static vector<int> readVector() {
+            vector<int> temp;
+            ifstream f("test.txt");
+            if (f.is_open())
+            {
+                int dim;
+                f >> dim;
+                cout << dim << endl;
+                temp.resize(dim);
+                int k = 0;
+                while (k<dim)
+                {
+                    f >> temp[k];
+                    k++;
+                }
+            }
+            else
+            {
+                exit(EXIT_FAILURE);
+            }
+            return temp;
+        }
+*/

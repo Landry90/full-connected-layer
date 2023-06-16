@@ -19,7 +19,7 @@ public:
   //std::vector<double> predict(std::vector<double>& inputs, double learning_rate);
   std::vector<Layer> getLayers();
   void printLayerOutputs();
-  void train(std::vector<double>& x_train, std::vector<double>& y_train, int n_epochs, double alpha);
+  //void train(std::vector<double>& x_train, std::vector<double>& y_train, int n_epochs, double alpha);
 
 private:
   int num_layers;
