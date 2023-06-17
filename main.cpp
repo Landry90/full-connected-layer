@@ -37,10 +37,10 @@ int main()
 
 	std::vector<double> norm_input_datas = normalize(vect);
 
-	NeuralNetwork network = NeuralNetwork(num_layers, num_neurons_per_layer, 0.0001);
+	NeuralNetwork network = NeuralNetwork(num_layers, num_neurons_per_layer, 0.0000001);
 	network.forward(norm_input_datas);
 
-	network.backward(norm_input_datas, 1.0, 0.0001);
+	network.backward(norm_input_datas, 0.0, 0.0000001);
 /*
 	std::vector<std::vector<double>> mat(nrows);
 	for(int i=0; i<nrows; ++i){

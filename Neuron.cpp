@@ -3,8 +3,8 @@
 int seed = time(0);
 std::default_random_engine gen(seed);
 // Création d'une distribution nor  male
-double mean = 0.0;                      // Moyenne de la distribution
-double stddev = 1.0;                    // Écart-type de la distribution
+double mean = -0.01;                      // Moyenne de la distribution
+double stddev = 0.01;                    // Écart-type de la distribution
 std::uniform_real_distribution<double> distribution(mean, stddev);
 
 
@@ -21,10 +21,10 @@ Neuron::Neuron(int prev_layer_size) {
 double Neuron::weighedBiasedSum(std::vector<double>& prev_layer_values){
     double weightedSum = 0.0;
     int size = this->weights.size();
-    for (unsigned int i=0; i<size; i++){
-        weightedSum += weights[i]*prev_layer_values[i];
+    for (int i=0; i<size; i++){
+        weightedSum += this->weights[i] * prev_layer_values[i];
     }
-    return weightedSum+(this->bias);
+    return weightedSum + (this->bias);
 }
 void Neuron::activate(std::vector<double>& prev_layer_values){
     double sum = weighedBiasedSum(prev_layer_values);
@@ -36,8 +36,8 @@ double Neuron::getOutput(){
 	return this->output;
 }
 
-void Neuron::setWeights(std::vector<double>&newWeights){
-	this->weights = newWeights;
+void Neuron::setWeights(std::vector<double>& new_weights){
+	this->weights = new_weights;
 }
 
 
